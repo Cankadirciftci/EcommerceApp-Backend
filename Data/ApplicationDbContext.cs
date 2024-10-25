@@ -16,7 +16,7 @@ namespace EcommerceApp.Data
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Enum'ı veritabanında string olarak saklayalım
+        modelBuilder.Entity<Product>().HasKey(p => p.Id);
         modelBuilder.Entity<User>()
             .Property(u => u.Role)
             .HasConversion(

@@ -20,17 +20,40 @@ namespace EcommerceApp.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<IActionResult> GetUser()
-        {
+        public async Task<IActionResult> GetUser() {
             if (User.IsInRole(RoleType.Admin.ToString()))
             {
-                var users = await _context.Users.ToListAsync();
-                return Ok(users);
+                var user = await _context.Users.ToListAsync();
+                return Ok(user);
             }
 
             return Unauthorized("Yalnızca admin kullanıcılar bu işlemi gerçekleştirebilir.");
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserId([FromRoute] int id){
+            if(User.IsInRole(RoleType.Admin.ToString())){
+               var user = await _context.Users.FindAsync(id);
+               if(user == null){
+                return NotFound();
+               }
+               return Ok(user);
+            }
+            return Unauthorized("Yalnızca admin kullanıcılar bu işlemi gerçekleştirebilir.");
+        }
+        
+        [HttpDelete("{id}")]
 
-
+        public async Task<IActionResult> UserDelete([FromRoute] int id){
+            if(User.IsInRole(RoleType.Admin.ToString())){
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+                if(user == null){
+                    return NotFound();
+                }
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            return Unauthorized("Yalnızca admin kullanıcılar bu işlemi gerçekleştirebilir.");
+        }
     }
 }
